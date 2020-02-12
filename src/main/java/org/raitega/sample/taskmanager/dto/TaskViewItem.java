@@ -1,9 +1,6 @@
 package org.raitega.sample.taskmanager.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.raitega.sample.taskmanager.entities.StatusType;
 
 import java.time.Instant;
@@ -15,6 +12,8 @@ import java.util.SplittableRandom;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TaskViewItem {
 
     private String id;

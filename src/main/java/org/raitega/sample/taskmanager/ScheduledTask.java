@@ -34,13 +34,13 @@ public class ScheduledTask {
     // TODO: need to review this - @Scheduled(cron = "*/${random.int[30,60]} * * * *
     // ?")
     /**
-     * Random task will be created between every 15 and 30 seconds
+     * Random task will be created every 15 and 30 seconds
      *
      */
     @Scheduled(fixedDelayString = "${random.int[15000,30000]}")
     public void createRandomTask() {
 
-        final TaskViewItem taskViewItem = new TaskViewItem("Task "+taskCounter++, "Task Description "+taskCounter++, PriorityType.values()[new SplittableRandom().nextInt(1, PriorityType.values().length)].name());
+        final TaskViewItem taskViewItem = new TaskViewItem("Task "+(++taskCounter), "Task Description "+taskCounter, PriorityType.values()[new SplittableRandom().nextInt(1, PriorityType.values().length)].name());
 
         try {
             final Task savedTask = this.taskRepository.save(getModelMapper().map(taskViewItem, Task.class));
