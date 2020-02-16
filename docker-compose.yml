@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  taskmanager-app-container:
+    image: raitega/taskmanager-docker:1
+    environment:
+      TZ: "Europe/Berlin"
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - /opt/raitega/taskmanager-app
+    ports:
+      - "8080:8080"

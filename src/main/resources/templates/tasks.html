@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Task manager</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{webjars/font-awesome/5.12.0/css/fontawesome.min.css}"/>
+    <script
+            th:src="@{webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Task Management</h2>
+    <p>&nbsp;</p>
+    <table class="table table-bordered" th:id="taskTable">
+        <thead>
+        <tr>
+            <th>S#</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Created At</th>
+            <th>Due Date</th>
+            <th>Resolved At</th>
+            <th>Updated At</th>
+            <th>Remind At</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+<div id="remindMeModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Remind Me</h4>
+            </div>
+            <div class="modal-body">
+                <p>Remind me at</p>
+                <p><input type="date" id="remindMeAt" name="remindMeAt"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal" id="btnDialogRemindMe">Ok</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        fetchTasks();
+        setInterval(fetchTasks, 10000);
+
+        $('body').on('click', '.btnRemind', function(){
+            console.log("Remind for task: "+$(this).data("itemid"));
+            $('#remindMeModal').modal('show');
+        });
+
+
+        $('#btnDialogRemindMe').on('click', function(){
+            $('#myModal').modal('hide');
+            //console.log("Remind for task on dialog OK : "+$('#remindMeModal').data("itemid"));
+        });
+
+
+        $('body').on('click', '.btnDelete', function(){
+            console.log("Delete task: "+$(this).data("itemid"));
+            var id = $(this).data("itemid");
+
+            $.ajax({
+                type : "DELETE",
+                contentType: "application/json",
+                dataType : 'text',
+                url : "/task/"+id,
+                //data:  JSON.stringify({"id": id}),
+                cache : false,
+                timeout : 600000,
+                success : function(data) {
+                    console.log("SUCCESS : ", data);
+                    fetchTasks();
+                },
+                error : function(e) {
+                    console.log("ERROR : ", e);
+                }
+            });
+
+        });
+
+        $('body').on('click', '.btnResolve', function(){
+                var id = $(this).data("itemid");
+
+                $.ajax({
+                    type : "PUT",
+                    contentType: "application/json",
+                    dataType : 'text',
+                    url : "/task/resolve/"+id,
+                    //data:  JSON.stringify({"id": id}),
+                    cache : false,
+                    timeout : 600000,
+                    success : function(data) {
+                        console.log("SUCCESS : ", data);
+                        fetchTasks();
+                    },
+                    error : function(e) {
+                        console.log("ERROR : ", e);
+                    }
+                });
+
+
+
+            });
+
+        $('body').on('change', '.remindAt', function(){
+            var id = $(this).data("itemid");
+            console.log('val for date is '+$(this).val());
+            $.ajax({
+                type : "PUT",
+                contentType: "application/json",
+                dataType : 'text',
+                url : "/task/defer/"+id+"/"+$(this).val(),
+                //data:  JSON.stringify({"id": id, "status":"DEFERRED", "remindAt": $(".remindAt").val()}),
+                cache : false,
+                timeout : 600000,
+                success : function(data) {
+                    console.log("SUCCESS : ", data);
+                    fetchTasks();
+                },
+                error : function(e) {
+                    console.log("ERROR : ", e);
+                }
+            });
+
+
+
+        });
+
+        /**
+         Fetch Task Ajax call.
+         **/
+        function fetchTasks() {
+            $.ajax({
+                type : "GET",
+                contentType : "application/json",
+                url : "/task/all",
+                cache : false,
+                timeout : 600000,
+                success : function(data) {
+                    $('#taskTable tbody').empty();
+                    var taskViewItems = data.taskViewItems;
+                    for(var i=0; i < taskViewItems.length; i++){
+                        var remindAtDate = (taskViewItems[i].remindAt == null ?  "no value" : taskViewItems[i].remindAt.split("T")[0]);
+                        console.log("date value : "+ taskViewItems[i].remindAt);
+
+                        $("#taskTable").find('tbody')
+                            .append($('<tr>').attr('id','taskTable_row_'+taskViewItems[i].id)
+                                .append($('<td>').append(i+1).append('</td>'))
+                                .append($('<td>').append(taskViewItems[i].title).append('</td>'))
+                                .append($('<td>').append(taskViewItems[i].description).append('</td>'))
+                                .append($('<td>').append(taskViewItems[i].createdAt).append('</td>'))
+                                .append($('<td>').append(taskViewItems[i].dueDate).append('</td>'))
+                                .append($('<td>').append(taskViewItems[i].resolvedAt).append('</td>'))
+                                .append($('<td>').append(taskViewItems[i].updatedAt).append('</td>'))
+                                .append($('<td>').append($('<input>').attr('data-itemId',taskViewItems[i].id).attr('type','date').attr('class','remindAt').attr('id',taskViewItems[i].id+'_remindAt').val(remindAtDate).attr('min',new Date().toISOString().split("T")[0]).append('</td>')))
+                                .append($('<td>').append(taskViewItems[i].priority).append('</td>'))
+                                .append($('<td>').append(taskViewItems[i].status).append('</td>'))
+                                .append(
+                                    $('<td>')
+                                        .append($('<button>').attr('type','button').attr('class','btn btn-danger btnDelete').attr('data-itemId',taskViewItems[i].id).append('Delete'))
+                                        .append($('<button>').attr('type','button').attr('class','btn btn-success btnResolve').attr('data-itemId',taskViewItems[i].id).append('Resolve'))
+                                )
+
+                            );
+
+                    }
+                },
+                error : function(e) {
+                    console.log("ERROR : ", e);
+                }
+            });
+        }
+
+    });
+
+
+</script>
+
+</body>
+</html>

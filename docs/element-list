@@ -1,0 +1,7 @@
+org.raitega.sample.taskmanager
+org.raitega.sample.taskmanager.controllers
+org.raitega.sample.taskmanager.dto
+org.raitega.sample.taskmanager.entities
+org.raitega.sample.taskmanager.repository
+org.raitega.sample.taskmanager.scheduler
+org.raitega.sample.taskmanager.util
