@@ -1,15 +1,13 @@
 package org.raitega.sample.taskmanager.scheduler;
 
-import org.modelmapper.ModelMapper;
-import org.raitega.sample.taskmanager.repository.TaskRepository;
 import org.raitega.sample.taskmanager.dto.TaskViewItem;
 import org.raitega.sample.taskmanager.entities.PriorityType;
 import org.raitega.sample.taskmanager.entities.Task;
+import org.raitega.sample.taskmanager.repository.TaskRepository;
 import org.raitega.sample.taskmanager.util.ObjectMapperUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

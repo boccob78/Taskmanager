@@ -2,13 +2,11 @@ package org.raitega.sample.taskmanager.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.raitega.sample.taskmanager.dto.TaskItems;
-import org.raitega.sample.taskmanager.repository.TaskRepository;
 import org.raitega.sample.taskmanager.dto.TaskViewItem;
 import org.raitega.sample.taskmanager.entities.StatusType;
 import org.raitega.sample.taskmanager.entities.Task;
+import org.raitega.sample.taskmanager.repository.TaskRepository;
 import org.raitega.sample.taskmanager.util.ObjectMapperUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -17,9 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
